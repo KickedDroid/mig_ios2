@@ -203,6 +203,7 @@ class _SignInPageState extends State<SignInPage> {
                           var box = Hive.box('myBox');
                           box.put('userId', emailData);
                           box.put('companyId', companyId);
+                          box.put('admin', false);
                         } else {
                           showToast();
                         }
@@ -240,6 +241,7 @@ class _SignInPageState extends State<SignInPage> {
                           signUp(emailData, passData);
                           var box = Hive.box('myBox');
                           box.put('companyId', companyId);
+                          box.put('admin', false);
                         } else {
                           showToast();
                         }
@@ -276,6 +278,7 @@ class _SignInPageState extends State<SignInPage> {
                           signInWithGoogle();
                           var box = Hive.box('myBox');
                           box.put('companyId', companyId);
+                          box.put('admin', false);
                         } else {
                           Toast.show("Enter a Company ID", context,
                               duration: 4);
