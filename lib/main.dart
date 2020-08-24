@@ -1,3 +1,4 @@
+import 'package:barcode_scan/platform_wrapper.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -127,12 +128,35 @@ getPermission() async {
   print(status);
 }
 
-class WelcomeScreen extends StatelessWidget {
+class WelcomeScreen extends StatefulWidget {
+  @override
+  _WelcomeScreenState createState() => _WelcomeScreenState();
+}
+
+class _WelcomeScreenState extends State<WelcomeScreen> {
+  String qrText;
+
+  _scan() async {
+    var result = await BarcodeScanner.scan();
+    setState(() {
+      qrText = result.rawContent;
+    });
+    if (qrText.length != 0) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => UpdateMachinePage(qrText, qrText),
+        ),
+      );
+    }
+  }
+
   final GlobalKey _scaffoldKey = new GlobalKey();
 
   String result = "Scan a Qr Code to begin";
 
   var box = Hive.box('myBox');
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -296,12 +320,7 @@ class WelcomeScreen extends StatelessWidget {
                         child: GestureDetector(
                           onTap: () {
                             getPermission();
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => QRViewExample(),
-                              ),
-                            );
+                            _scan();
                           },
                           child: Container(
                               height: MediaQuery.of(context).size.height * .07,
