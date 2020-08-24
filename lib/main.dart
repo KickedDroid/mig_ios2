@@ -292,23 +292,40 @@ class WelcomeScreen extends StatelessWidget {
                               fontSize: 20, fontWeight: FontWeight.bold),
                         ),
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          FlatButton(
-                              color: Colors.blue,
-                              onPressed: () async {
-                                getPermission();
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => QRViewExample(),
+                      Center(
+                        child: GestureDetector(
+                          onTap: () {
+                            getPermission();
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => QRViewExample(),
+                              ),
+                            );
+                          },
+                          child: Container(
+                              height: MediaQuery.of(context).size.height * .07,
+                              width: 300,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  gradient: LinearGradient(colors: [
+                                    Colors.blueAccent[700],
+                                    Colors.blue
+                                  ])),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    'Scan Qr Code',
+                                    style: TextStyle(
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.white),
                                   ),
-                                );
-                              },
-                              child: Text('Scan')),
-                        ],
-                      ),
+                                ],
+                              )),
+                        ),
+                      )
                     ],
                   ).padding(),
                 );
