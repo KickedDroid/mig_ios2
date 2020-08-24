@@ -160,6 +160,7 @@ class _CreateCompanyPageState extends State<CreateCompanyPage> {
                         builder: (context) => BatchAddPage(),
                       ),
                     );
+                    Navigator.of(context).dispose();
                   },
                   child: Container(
                     height: MediaQuery.of(context).size.height * .07,
