@@ -91,60 +91,54 @@ class _BatchAddPageState extends State<BatchAddPage> {
         },
       ),
       body: SafeArea(
-        child: Expanded(
-          child: ListView(
-            children: <Widget>[
-              Text(
-                'Create Multiple Machines',
-                style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
-              ).padding(),
-              TextFormField(
-                controller: controller,
-                keyboardType: TextInputType.number,
-                style:
-                    TextStyle(color: Colors.black, fontFamily: 'SFUIDisplay'),
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Number of Machines to Add',
-                  labelStyle: TextStyle(fontSize: 15),
-                ),
-              ).padding(),
-              TextFormField(
-                controller: controller2,
-                style:
-                    TextStyle(color: Colors.black, fontFamily: 'SFUIDisplay'),
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Name of Batch',
-                  labelStyle: TextStyle(fontSize: 15),
-                ),
-              ).padding(),
-              TextFormField(
-                controller: controllerCmin,
-                style:
-                    TextStyle(color: Colors.black, fontFamily: 'SFUIDisplay'),
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Min',
-                  labelStyle: TextStyle(fontSize: 15),
-                ),
-              ).padding(),
-              TextFormField(
-                controller: controllerCmax,
-                style:
-                    TextStyle(color: Colors.black, fontFamily: 'SFUIDisplay'),
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Max',
-                  labelStyle: TextStyle(fontSize: 15),
-                ),
-              ).padding(),
-              Text(
-                'This screen allows you to setup multiple machines at once',
-                style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
-              ).padding(),
-            ],
-          ),
+        child: ListView(
+          children: <Widget>[
+            Text(
+              'Create Multiple Machines',
+              style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
+            ).padding(),
+            TextFormField(
+              controller: controller,
+              keyboardType: TextInputType.number,
+              style: TextStyle(color: Colors.black, fontFamily: 'SFUIDisplay'),
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Number of Machines to Add',
+                labelStyle: TextStyle(fontSize: 15),
+              ),
+            ).padding(),
+            TextFormField(
+              controller: controller2,
+              style: TextStyle(color: Colors.black, fontFamily: 'SFUIDisplay'),
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Name of Batch',
+                labelStyle: TextStyle(fontSize: 15),
+              ),
+            ).padding(),
+            TextFormField(
+              controller: controllerCmin,
+              style: TextStyle(color: Colors.black, fontFamily: 'SFUIDisplay'),
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Min',
+                labelStyle: TextStyle(fontSize: 15),
+              ),
+            ).padding(),
+            TextFormField(
+              controller: controllerCmax,
+              style: TextStyle(color: Colors.black, fontFamily: 'SFUIDisplay'),
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Max',
+                labelStyle: TextStyle(fontSize: 15),
+              ),
+            ).padding(),
+            Text(
+              'This screen allows you to setup multiple machines at once',
+              style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+            ).padding(),
+          ],
         ),
       ),
     );
