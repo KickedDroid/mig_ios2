@@ -81,6 +81,14 @@ class _SignInPageState extends State<SignInPage> {
   String companyId;
   bool _showPassword = true;
 
+  void getInputData() {
+    setState(() {
+      passData = pass.text;
+      emailData = email.text;
+      companyId = company.text;
+    });
+  }
+
   showToast() {
     Toast.show("Enter Valid Email", context, duration: Toast.LENGTH_LONG);
   }
@@ -92,36 +100,59 @@ class _SignInPageState extends State<SignInPage> {
         backgroundColor: Colors.white,
         body: ListView(
           children: [
-            Expanded(
-              child: new Container(
-                height: MediaQuery.of(context).size.height,
-                width: MediaQuery.of(context).size.width,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topRight,
-                    end: Alignment.bottomLeft,
-                    stops: [0.1, 0.5, 0.7, 0.9],
-                    colors: [
-                      Colors.white,
-                      Colors.blue[50],
-                      Colors.lightBlue[100],
-                      Colors.lightBlue[200],
-                    ],
-                  ),
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(00.0),
-                  // the box shawdow property allows for fine tuning as aposed to shadowColor
+            new Container(
+              height: MediaQuery.of(context).size.height,
+              width: MediaQuery.of(context).size.width,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topRight,
+                  end: Alignment.bottomLeft,
+                  stops: [0.1, 0.5, 0.7, 0.9],
+                  colors: [
+                    Colors.white,
+                    Colors.blue[50],
+                    Colors.lightBlue[100],
+                    Colors.lightBlue[200],
+                  ],
                 ),
-                child: Column(
-                  children: [
-                    Padding(
-                      padding:
-                          const EdgeInsets.fromLTRB(60.0, 20.0, 60.0, 20.0),
-                      child: Container(
-                          height: MediaQuery.of(context).size.height * .2,
-                          child: Image.asset('assets/logosb.png')),
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(00.0),
+                // the box shawdow property allows for fine tuning as aposed to shadowColor
+              ),
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(60.0, 20.0, 60.0, 20.0),
+                    child: Container(
+                        height: MediaQuery.of(context).size.height * .2,
+                        child: Image.asset('assets/logosb.png')),
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(5),
+                        border: Border.all(color: Colors.grey)),
+                    height: MediaQuery.of(context).size.height * .07,
+                    width: 300,
+                    child: TextFormField(
+                      onChanged: (value) {
+                        setState(() {
+                          emailData = value;
+                        });
+                      },
+                      controller: email,
+                      style: TextStyle(
+                          color: Colors.black, fontFamily: 'SFUIDisplay'),
+                      decoration: InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'Email',
+                          prefixIcon: Icon(Icons.person_outline),
+                          labelStyle: TextStyle(fontSize: 15)),
                     ),
-                    Container(
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Container(
                       decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(5),
@@ -129,191 +160,164 @@ class _SignInPageState extends State<SignInPage> {
                       height: MediaQuery.of(context).size.height * .07,
                       width: 300,
                       child: TextFormField(
-                        onChanged: (value) {
-                          setState(() {
-                            emailData = value;
-                          });
-                        },
-                        controller: email,
-                        style: TextStyle(
-                            color: Colors.black, fontFamily: 'SFUIDisplay'),
-                        decoration: InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: 'Email',
-                            prefixIcon: Icon(Icons.person_outline),
-                            labelStyle: TextStyle(fontSize: 15)),
-                      ),
+                          onChanged: (value) {
+                            setState(() {
+                              passData = value;
+                            });
+                          },
+                          controller: pass,
+                          style: TextStyle(
+                              color: Colors.black, fontFamily: 'SFUIDisplay'),
+                          obscureText: !this._showPassword,
+                          decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'Password',
+                              prefixIcon: Icon(Icons.lock_outline),
+                              labelStyle: TextStyle(fontSize: 15))),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Container(
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(5),
-                            border: Border.all(color: Colors.grey)),
-                        height: MediaQuery.of(context).size.height * .07,
-                        width: 300,
-                        child: TextFormField(
-                            onChanged: (value) {
-                              setState(() {
-                                passData = value;
-                              });
-                            },
-                            controller: pass,
-                            style: TextStyle(
-                                color: Colors.black, fontFamily: 'SFUIDisplay'),
-                            obscureText: !this._showPassword,
-                            decoration: InputDecoration(
-                                border: OutlineInputBorder(),
-                                labelText: 'Password',
-                                prefixIcon: Icon(Icons.lock_outline),
-                                labelStyle: TextStyle(fontSize: 15))),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(0.0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(5),
+                        border: Border.all(color: Colors.grey),
                       ),
+                      height: MediaQuery.of(context).size.height * .07,
+                      width: 300,
+                      child: TextFormField(
+                          onChanged: (value) {
+                            setState(() {
+                              companyId = value;
+                            });
+                          },
+                          controller: pass,
+                          style: TextStyle(
+                              color: Colors.black, fontFamily: 'SFUIDisplay'),
+                          decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'CompanyID',
+                              prefixIcon: Icon(Icons.edit),
+                              labelStyle: TextStyle(fontSize: 15))),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.all(0.0),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      if (emailData.contains("@")) {
+                        signIn(emailData, passData);
+                        var box = Hive.box('myBox');
+                        box.put('userId', emailData);
+                        box.put('companyId', companyId);
+                        box.put('admin', false);
+                      } else {
+                        showToast();
+                      }
+                    },
+                    onLongPress: () => {},
+                    child: Padding(
+                      padding:
+                          const EdgeInsets.fromLTRB(20.0, 30.0, 20.0, 10.0),
                       child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(5),
-                          border: Border.all(color: Colors.grey),
+                          height: MediaQuery.of(context).size.height * .07,
+                          width: 300,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              gradient: LinearGradient(colors: [
+                                Colors.blueAccent[700],
+                                Colors.blue
+                              ])),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Login',
+                                style: TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white),
+                              ),
+                            ],
+                          )),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      if (emailData.contains("@")) {
+                        signUp(emailData, passData);
+                        var box = Hive.box('myBox');
+                        box.put('companyId', companyId);
+                        box.put('admin', false);
+                      } else {
+                        showToast();
+                      }
+                    },
+                    onLongPress: () => {},
+                    child: Padding(
+                      padding: const EdgeInsets.all(3.0),
+                      child: Container(
+                          height: MediaQuery.of(context).size.height * .07,
+                          width: 300,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              gradient: LinearGradient(colors: [
+                                Colors.orangeAccent,
+                                Colors.orange
+                              ])),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Create an account',
+                                style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white),
+                              )
+                            ],
+                          )),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      if (companyId != null) {
+                        signInWithGoogle();
+                        var box = Hive.box('myBox');
+                        box.put('companyId', companyId);
+                        box.put('admin', false);
+                      } else {
+                        Toast.show("Enter a Company ID", context, duration: 4);
+                      }
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(15.0),
+                      child: Text("Sign in with Google"),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      resetPassword(emailData);
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(15.0),
+                      child: Text("Forgot Password"),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CreateCompanyPage(),
                         ),
-                        height: MediaQuery.of(context).size.height * .07,
-                        width: 300,
-                        child: TextFormField(
-                            onChanged: (value) {
-                              setState(() {
-                                companyId = value;
-                              });
-                            },
-                            controller: pass,
-                            style: TextStyle(
-                                color: Colors.black, fontFamily: 'SFUIDisplay'),
-                            decoration: InputDecoration(
-                                border: OutlineInputBorder(),
-                                labelText: 'CompanyID',
-                                prefixIcon: Icon(Icons.edit),
-                                labelStyle: TextStyle(fontSize: 15))),
-                      ),
+                      );
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(15.0),
+                      child: Text("Create Company"),
                     ),
-                    GestureDetector(
-                      onTap: () {
-                        if (emailData.contains("@")) {
-                          signIn(emailData, passData);
-                          var box = Hive.box('myBox');
-                          box.put('userId', emailData);
-                          box.put('companyId', companyId);
-                          box.put('admin', false);
-                        } else {
-                          showToast();
-                        }
-                      },
-                      onLongPress: () => {},
-                      child: Padding(
-                        padding:
-                            const EdgeInsets.fromLTRB(20.0, 30.0, 20.0, 10.0),
-                        child: Container(
-                            height: MediaQuery.of(context).size.height * .07,
-                            width: 300,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                gradient: LinearGradient(colors: [
-                                  Colors.blueAccent[700],
-                                  Colors.blue
-                                ])),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  'Login',
-                                  style: TextStyle(
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.white),
-                                ),
-                              ],
-                            )),
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        if (emailData.contains("@")) {
-                          signUp(emailData, passData);
-                          var box = Hive.box('myBox');
-                          box.put('companyId', companyId);
-                          box.put('admin', false);
-                        } else {
-                          showToast();
-                        }
-                      },
-                      onLongPress: () => {},
-                      child: Padding(
-                        padding: const EdgeInsets.all(3.0),
-                        child: Container(
-                            height: MediaQuery.of(context).size.height * .07,
-                            width: 300,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                gradient: LinearGradient(colors: [
-                                  Colors.orangeAccent,
-                                  Colors.orange
-                                ])),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  'Create an account',
-                                  style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.white),
-                                )
-                              ],
-                            )),
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        if (companyId != null) {
-                          signInWithGoogle();
-                          var box = Hive.box('myBox');
-                          box.put('companyId', companyId);
-                          box.put('admin', false);
-                        } else {
-                          Toast.show("Enter a Company ID", context,
-                              duration: 4);
-                        }
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.all(15.0),
-                        child: Text("Sign in with Google"),
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        resetPassword(emailData);
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.all(15.0),
-                        child: Text("Forgot Password"),
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => CreateCompanyPage(),
-                          ),
-                        );
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.all(15.0),
-                        child: Text("Create Company"),
-                      ),
-                    )
-                  ],
-                ),
+                  )
+                ],
               ),
             ),
           ],
