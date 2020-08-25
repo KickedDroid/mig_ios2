@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
 import 'batch.dart';
 import 'signin.dart';
@@ -153,7 +154,7 @@ class _CreateCompanyPageState extends State<CreateCompanyPage> {
                     signUp(emailData, passData);
                     var box = Hive.box('myBox');
                     box.put('companyId', companyId);
-                    //createCompany(companyId);
+                    box.put('admin', true);
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -192,20 +193,17 @@ class _CreateCompanyPageState extends State<CreateCompanyPage> {
   }
 }
 
-createCompany(String companyId) async {
+Future<bool> createCompany(String companyId) async {
   var box = Hive.box('myBox');
   var time = new DateTime.now();
   box.put('isEmpty', true);
-  await Firestore.instance
-      .collection(box.get('companyId'))
-      .document("Mori")
-      .setData({
-    "name": "Mori",
-    "coolant-percent": "0.0",
-    "last-updated": "$time",
-    "last-cleaned": "$time",
-    "notes": {"note": "No Notes", "time": "$time"},
-    "c-min": "2",
-    "c-max": "12"
+  var result = Firestore.instance.collection(companyId).getDocuments();
+
+  result.then((value) {
+    if (value.documents.isEmpty) {
+      return true;
+    } else {
+      return false;
+    }
   });
 }

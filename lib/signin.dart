@@ -248,6 +248,7 @@ class _SignInPageState extends State<SignInPage> {
                         var box = Hive.box('myBox');
                         box.put('companyId', companyId);
                         box.put('admin', false);
+                        box.put('userId', emailData);
                       } else {
                         showToast();
                       }
