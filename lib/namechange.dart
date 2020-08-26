@@ -6,8 +6,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ChangeNamePage extends StatefulWidget {
   final String docRef;
+  final String name;
 
-  ChangeNamePage(this.docRef);
+  ChangeNamePage(this.docRef, this.name);
 
   @override
   _ChangeNamePageState createState() => _ChangeNamePageState();
@@ -22,11 +23,22 @@ class _ChangeNamePageState extends State<ChangeNamePage> {
     });
   }
 
-  final TextEditingController controller = TextEditingController();
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    controller = new TextEditingController(text: widget.name);
+  }
+
+  TextEditingController controller = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Container(
       child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Color(0xFF1c6b92),
+          title: Text('Edit Machine Name'),
+        ),
         floatingActionButton: FloatingActionButton(
           backgroundColor: Color(0xFF1c6b92),
           onPressed: () {
@@ -50,31 +62,55 @@ class _ChangeNamePageState extends State<ChangeNamePage> {
           ),
         ),
         body: SafeArea(
-          child: Column(
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 30, 20, 10),
-                child: Text(
-                  'Edit Name of Machine',
-                  style: TextStyle(fontSize: 32.0, fontWeight: FontWeight.w700),
-                ),
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topRight,
+                end: Alignment.bottomLeft,
+                stops: [0.1, 0.5, 0.7, 0.9],
+                colors: [
+                  Colors.white,
+                  Colors.blue[50],
+                  Colors.lightBlue[100],
+                  Colors.lightBlue[200],
+                ],
               ),
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextFormField(
-                    controller: controller,
-                    style: TextStyle(
-                        color: Colors.black, fontFamily: 'SFUIDisplay'),
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'New Name',
-                      labelStyle: TextStyle(fontSize: 15),
+
+              color: Colors.white,
+
+              borderRadius: BorderRadius.circular(00.0),
+
+              // the box shawdow property allows for fine tuning as aposed to shadowColor
+            ),
+            child: Column(
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 30, 20, 10),
+                  child: Text(
+                    'Edit Name of Machine',
+                    style:
+                        TextStyle(fontSize: 32.0, fontWeight: FontWeight.w700),
+                  ),
+                ),
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextFormField(
+                      controller: controller,
+                      style: TextStyle(
+                          color: Colors.black, fontFamily: 'SFUIDisplay'),
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.white,
+                        border: OutlineInputBorder(),
+                        labelText: 'New Name',
+                        labelStyle: TextStyle(fontSize: 15),
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

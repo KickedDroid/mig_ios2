@@ -42,7 +42,6 @@ dependencies:
   charts_flutter:
   image_gallery_saver: '^1.5.0'
   toast: ^0.1.5
-  qr_code_scanner: ^0.0.13
   permission_handler: ^5.0.1+1
   barcode_scan:
   pdf: ^1.11.0

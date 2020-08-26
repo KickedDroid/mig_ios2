@@ -10,7 +10,6 @@ import 'graph.dart';
 import 'history.dart';
 import 'latestentries.dart';
 import 'qr.dart';
-import 'package:qr_code_scanner/qr_code_scanner.dart';
 import './signin.dart';
 import 'package:splashscreen/splashscreen.dart';
 import './machines.dart';

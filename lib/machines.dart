@@ -159,7 +159,8 @@ class MachineItem extends StatelessWidget {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => ChangeNamePage(docRef),
+                                builder: (context) =>
+                                    ChangeNamePage(docRef, name),
                               ),
                             );
                           })

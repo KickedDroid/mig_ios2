@@ -9,7 +9,6 @@ import 'updatemachine.dart';
 import 'extensions.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'generateQr.dart';
-import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:barcode_scan/barcode_scan.dart';
 
@@ -30,7 +29,6 @@ class QRViewExample extends StatefulWidget {
 class _QRViewExampleState extends State<QRViewExample> {
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   var qrText = "";
-  QRViewController controller;
 
   @override
   void initState() {
