@@ -17,6 +17,16 @@ class NotesList extends StatefulWidget {
 
 class _NotesListState extends State<NotesList> {
   var box = Hive.box('myBox');
+
+  void deleteNote(String docRef, String item) {
+    Firestore.instance
+        .collection(box.get('companyId'))
+        .document(docRef)
+        .collection('notes')
+        .document(item)
+        .delete();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,9 +69,20 @@ class _NotesListState extends State<NotesList> {
                 itemCount: snapshot.data.documents.length,
                 itemBuilder: (context, index) {
                   DocumentSnapshot machines = snapshot.data.documents[index];
-                  return MachineItem(
-                    notes: machines['note'],
-                    name: machines['time'],
+                  return Dismissible(
+                    onDismissed: (direction) {
+                      deleteNote(widget.docRef, machines.documentID);
+                      Scaffold.of(context).showSnackBar(
+                          SnackBar(content: Text("Note deleted")));
+                    },
+                    background: Container(
+                      color: Colors.red,
+                    ),
+                    key: Key(widget.docRef),
+                    child: MachineItem(
+                      notes: machines['note'],
+                      name: machines['time'],
+                    ),
                   );
                 },
               );

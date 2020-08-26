@@ -60,7 +60,7 @@ class _AddMachineListState extends State<AddMachineList> {
               context: context,
               builder: (BuildContext context) {
                 return Container(
-                  height: 250,
+                  height: 325,
                   color: Colors.white,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -119,6 +119,39 @@ class _AddMachineListState extends State<AddMachineList> {
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(10),
                                   gradient: LinearGradient(colors: [
+                                    Colors.lightBlue,
+                                    Colors.lightBlueAccent
+                                  ])),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.settings_applications,
+                                    color: Colors.white,
+                                  ),
+                                  Text(
+                                    'Batch Add',
+                                    style: TextStyle(color: Colors.white),
+                                  )
+                                ],
+                              )),
+                        ),
+                      ).padding(),
+                      Center(
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => BatchQrCodes()));
+                          },
+                          onLongPress: () => {},
+                          child: Container(
+                              height: 50,
+                              width: 300,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  gradient: LinearGradient(colors: [
                                     Colors.blue,
                                     Colors.blueAccent
                                   ])),
@@ -126,7 +159,7 @@ class _AddMachineListState extends State<AddMachineList> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Text(
-                                    ' Batch Add',
+                                    ' Batch QR',
                                     style: TextStyle(color: Colors.white),
                                   )
                                 ],

@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:hive/hive.dart';
+import 'package:mig_ios2/initialpage.dart';
 import 'batch.dart';
 import 'graph.dart';
 import 'history.dart';
@@ -115,7 +116,7 @@ Widget _handleWidget() {
           if (snapshot.hasData) {
             return WelcomeScreen();
           } else {
-            return SignInPage();
+            return InitialPage();
             //return WelcomeScreen();
           }
         }

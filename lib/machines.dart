@@ -39,6 +39,7 @@ class _MachineListState extends State<MachineList> {
               child: StreamBuilder(
                 stream: Firestore.instance
                     .collection(box.get('companyId'))
+                    .orderBy("name", descending: false)
                     .snapshots(),
                 builder: (context, snapshot) {
                   assert(snapshot != null);

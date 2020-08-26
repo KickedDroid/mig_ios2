@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:hive/hive.dart';
+import 'initialpage.dart';
+import 'main.dart';
 import 'reset.dart';
 import 'createcompany.dart';
 import 'extensions.dart';
@@ -210,6 +212,12 @@ class _SignInPageState extends State<SignInPage> {
                         box.put('userId', emailData);
                         box.put('companyId', companyId);
                         box.put('admin', false);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => _handleWidget(),
+                          ),
+                        );
                       } else {
                         showToast();
                       }
@@ -249,6 +257,12 @@ class _SignInPageState extends State<SignInPage> {
                         box.put('companyId', companyId);
                         box.put('admin', false);
                         box.put('userId', emailData);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => _handleWidget(),
+                          ),
+                        );
                       } else {
                         showToast();
                       }
@@ -325,6 +339,25 @@ class _SignInPageState extends State<SignInPage> {
         ),
       ),
     );
+  }
+
+  Widget _handleWidget() {
+    return StreamBuilder(
+        stream: FirebaseAuth.instance.onAuthStateChanged,
+        builder: (BuildContext context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: Text('Loading'),
+            );
+          } else {
+            if (snapshot.hasData) {
+              return WelcomeScreen();
+            } else {
+              return SignInPage();
+              //return WelcomeScreen();
+            }
+          }
+        });
   }
 
   void handleError(e) {
