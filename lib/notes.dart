@@ -18,6 +18,8 @@ class NotesList extends StatefulWidget {
 class _NotesListState extends State<NotesList> {
   var box = Hive.box('myBox');
 
+  final TextEditingController controller = TextEditingController();
+
   void deleteNote(String docRef, String item) {
     Firestore.instance
         .collection(box.get('companyId'))
@@ -25,6 +27,32 @@ class _NotesListState extends State<NotesList> {
         .collection('notes')
         .document(item)
         .delete();
+  }
+
+  void editNote(String docRef, String item) {
+    showDialog(
+      context: context,
+      builder: (_) => new AlertDialog(
+        title: new Text("Edit Note"),
+        content: TextField(
+          controller: controller,
+        ),
+        actions: <Widget>[
+          FlatButton(
+            child: Text('Submit'),
+            onPressed: () {
+              Firestore.instance
+                  .collection(box.get('companyId'))
+                  .document(docRef)
+                  .collection('notes')
+                  .document(item)
+                  .updateData({"note": "${controller.text}"});
+              Navigator.of(context).pop();
+            },
+          )
+        ],
+      ),
+    );
   }
 
   @override
@@ -79,9 +107,14 @@ class _NotesListState extends State<NotesList> {
                       color: Colors.red,
                     ),
                     key: Key(widget.docRef),
-                    child: MachineItem(
-                      notes: machines['note'],
-                      name: machines['time'],
+                    child: GestureDetector(
+                      onTap: () {
+                        editNote(widget.docRef, machines.documentID);
+                      },
+                      child: MachineItem(
+                        notes: machines['note'],
+                        name: machines['time'],
+                      ),
                     ),
                   );
                 },
