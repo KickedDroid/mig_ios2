@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:hive/hive.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
 const greenPercent = Color(0xff14c4f7);
 
@@ -18,18 +19,42 @@ class NotesList extends StatefulWidget {
 class _NotesListState extends State<NotesList> {
   var box = Hive.box('myBox');
 
-  final TextEditingController controller = TextEditingController();
+  TextEditingController controller = TextEditingController();
 
   void deleteNote(String docRef, String item) {
-    Firestore.instance
-        .collection(box.get('companyId'))
-        .document(docRef)
-        .collection('notes')
-        .document(item)
-        .delete();
+    showDialog(
+      context: context,
+      builder: (_) => new AlertDialog(
+        title: new Text("Are You Sure You Want To Delete?"),
+        content: Text(""),
+        actions: <Widget>[
+          FlatButton(
+            child: Text('Cancel'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+          FlatButton(
+            child: Text('Submit'),
+            onPressed: () {
+              Firestore.instance
+                  .collection(box.get('companyId'))
+                  .document(docRef)
+                  .collection('notes')
+                  .document(item)
+                  .delete();
+              Navigator.of(context).pop();
+            },
+          )
+        ],
+      ),
+    );
   }
 
-  void editNote(String docRef, String item) {
+  void editNote(String docRef, String item, String note) {
+    setState(() {
+      controller = new TextEditingController(text: note);
+    });
     showDialog(
       context: context,
       builder: (_) => new AlertDialog(
@@ -97,24 +122,30 @@ class _NotesListState extends State<NotesList> {
                 itemCount: snapshot.data.documents.length,
                 itemBuilder: (context, index) {
                   DocumentSnapshot machines = snapshot.data.documents[index];
-                  return Dismissible(
-                    onDismissed: (direction) {
-                      deleteNote(widget.docRef, machines.documentID);
-                      Scaffold.of(context).showSnackBar(
-                          SnackBar(content: Text("Note deleted")));
-                    },
-                    background: Container(
-                      color: Colors.red,
-                    ),
-                    key: Key(widget.docRef),
-                    child: GestureDetector(
-                      onTap: () {
-                        editNote(widget.docRef, machines.documentID);
-                      },
-                      child: MachineItem(
-                        notes: machines['note'],
-                        name: machines['time'],
+                  return Slidable(
+                    secondaryActions: <Widget>[
+                      IconSlideAction(
+                        caption: 'Edit Note',
+                        color: Colors.black45,
+                        icon: Icons.edit,
+                        onTap: () => {
+                          editNote(widget.docRef, machines.documentID,
+                              machines['note'])
+                        },
                       ),
+                      IconSlideAction(
+                        caption: 'Delete',
+                        color: Colors.red,
+                        icon: Icons.delete,
+                        onTap: () =>
+                            deleteNote(widget.docRef, machines.documentID),
+                      ),
+                    ],
+                    actionPane: SlidableDrawerActionPane(),
+                    actionExtentRatio: 0.25,
+                    child: MachineItem(
+                      notes: machines['note'],
+                      name: machines['time'],
                     ),
                   );
                 },
