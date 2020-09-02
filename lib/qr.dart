@@ -84,10 +84,19 @@ class _UpdateMachinePageState extends State<UpdateMachinePage> {
 
   final cminController = TextEditingController();
   final cmaxController = TextEditingController();
+  final ctargetController = TextEditingController();
+  final cuwarningController = TextEditingController();
+  final clwarningController = TextEditingController();
 
   String cMin;
 
   String cMax;
+
+  String cUwarning;
+
+  String cTarget;
+
+  String cLwarning;
 
   Widget _handleWidget() {
     return ValueListenableBuilder(
@@ -100,32 +109,96 @@ class _UpdateMachinePageState extends State<UpdateMachinePage> {
           return Container(
             child: Column(
               children: [
-                TextField(
-                  onChanged: (value) {
-                    setState(() {
-                      cMin = value;
-                    });
-                  },
-                  keyboardType: TextInputType.number,
-                  controller: controller,
-                  decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Min Coolant % (Optional)',
-                      labelStyle: TextStyle(fontSize: 15)),
-                ).padding(),
-                TextField(
-                  onChanged: (value) {
-                    setState(() {
-                      cMax = value;
-                    });
-                  },
-                  keyboardType: TextInputType.number,
-                  controller: controller,
-                  decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Max Coolant % (Optional)',
-                      labelStyle: TextStyle(fontSize: 15)),
-                ).padding()
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
+                  child: TextField(
+                    onChanged: (value) {
+                      setState(() {
+                        cTarget = value;
+                      });
+                    },
+                    keyboardType: TextInputType.number,
+                    controller: controller,
+                    decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.white,
+                        border: OutlineInputBorder(),
+                        labelText: 'Target Coolant % (Optional)',
+                        labelStyle: TextStyle(fontSize: 15)),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
+                  child: TextField(
+                    onChanged: (value) {
+                      setState(() {
+                        cMin = value;
+                      });
+                    },
+                    keyboardType: TextInputType.number,
+                    controller: controller,
+                    decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.white,
+                        border: OutlineInputBorder(),
+                        labelText: 'Min Coolant % (Optional)',
+                        labelStyle: TextStyle(fontSize: 15)),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
+                  child: TextField(
+                    onChanged: (value) {
+                      setState(() {
+                        cMax = value;
+                      });
+                    },
+                    keyboardType: TextInputType.number,
+                    controller: controller,
+                    decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.white,
+                        border: OutlineInputBorder(),
+                        labelText: 'Max Coolant % (Optional)',
+                        labelStyle: TextStyle(fontSize: 15)),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
+                  child: TextField(
+                    onChanged: (value) {
+                      setState(() {
+                        cLwarning = value;
+                      });
+                    },
+                    keyboardType: TextInputType.number,
+                    controller: controller,
+                    decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.white,
+                        border: OutlineInputBorder(),
+                        labelText: 'Lower Warning % (Optional)',
+                        labelStyle: TextStyle(fontSize: 15)),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
+                  child: TextField(
+                    onChanged: (value) {
+                      setState(() {
+                        cUwarning = value;
+                      });
+                    },
+                    keyboardType: TextInputType.number,
+                    controller: controller,
+                    decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.white,
+                        border: OutlineInputBorder(),
+                        labelText: 'Upper Warning % (Optional)',
+                        labelStyle: TextStyle(fontSize: 15)),
+                  ),
+                ),
               ],
             ),
           );
@@ -268,17 +341,24 @@ class _UpdateMachinePageState extends State<UpdateMachinePage> {
                               .updateData({"last-cleaned": "$time"});
                         }
 
-                        if (cMin != null) {
+                        if (cTarget != null) {
                           Firestore.instance
                               .collection(box.get('companyId'))
                               .document("${widget.docRef}")
-                              .updateData({"c-min": "$cMin"});
+                              .updateData({"c-target": "$cTarget"});
                         }
-                        if (cMax != null) {
+
+                        if (cUwarning != null) {
                           Firestore.instance
                               .collection(box.get('companyId'))
                               .document("${widget.docRef}")
-                              .updateData({"c-max": "$cMax"});
+                              .updateData({"c-uwarning": "$cUwarning"});
+                        }
+                        if (cLwarning != null) {
+                          Firestore.instance
+                              .collection(box.get('companyId'))
+                              .document("${widget.docRef}")
+                              .updateData({"c-lwarning": "$cLwarning"});
                         }
                         Navigator.pop(context);
                       },

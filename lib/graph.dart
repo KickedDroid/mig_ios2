@@ -3,13 +3,18 @@ import 'package:flutter/material.dart';
 
 import 'package:hive/hive.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
+import 'historylatest.dart';
 
 class MachineGraph extends StatefulWidget {
   final String docRef;
   final double cMin;
   final double cMax;
+  final double cTarget;
+  final double cUwarning;
+  final double cLwarning;
 
-  MachineGraph(this.docRef, this.cMin, this.cMax);
+  MachineGraph(this.docRef, this.cMin, this.cMax, this.cTarget, this.cUwarning,
+      this.cLwarning);
 
   @override
   _MachineGraphState createState() => _MachineGraphState();
@@ -21,7 +26,8 @@ class _MachineGraphState extends State<MachineGraph> {
     return SafeArea(
       child: Container(
           child: Scaffold(
-        body: HistoryHomePage(widget.docRef, widget.cMin, widget.cMax),
+        body: HistoryHomePage(widget.docRef, widget.cMin, widget.cMax,
+            widget.cTarget, widget.cUwarning, widget.cLwarning),
       )),
     );
   }
@@ -43,8 +49,12 @@ class HistoryHomePage extends StatefulWidget {
   final String docRef;
   final double cMin;
   final double cMax;
+  final double cTarget;
+  final double cUwarning;
+  final double cLwarning;
 
-  HistoryHomePage(this.docRef, this.cMin, this.cMax);
+  HistoryHomePage(this.docRef, this.cMin, this.cMax, this.cTarget,
+      this.cUwarning, this.cLwarning);
 
   @override
   _HistoryHomePageState createState() {
@@ -82,8 +92,8 @@ class _HistoryHomePageState extends State<HistoryHomePage> {
       charts.Series(
         domainFn: (History history, _) => history.time,
         measureFn: (History history, _) => double.parse(history.data),
-        colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
-        areaColorFn: (_, __) => charts.MaterialPalette.blue.makeShades(100)[99],
+        colorFn: (_, __) => charts.MaterialPalette.gray.makeShades(100)[1],
+        //areaColorFn: (_, __) => charts.MaterialPalette.blue.makeShades(100)[99],
         id: 'Sales',
         data: mydata,
         labelAccessorFn: (History row, _) => "${row.data}",
@@ -115,7 +125,24 @@ class _HistoryHomePageState extends State<HistoryHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Coolant Percentage History'),
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => HistoryLatestEntriesPage(widget.docRef),
+                ),
+              );
+            },
+            icon: Icon(Icons.filter_list),
+          )
+        ],
+        title: Text('$name History'),
+        toolbarHeight:
+            MediaQuery.of(context).orientation == Orientation.portrait
+                ? AppBar().preferredSize.height
+                : 0,
         backgroundColor: Color(0xFF1c6b92),
       ),
       backgroundColor: Colors.white,
@@ -124,9 +151,10 @@ class _HistoryHomePageState extends State<HistoryHomePage> {
   }
 
   Widget _buildBody(BuildContext context) {
+    var box = Hive.box('myBox');
     return StreamBuilder<QuerySnapshot>(
       stream: Firestore.instance
-          .collection('companies')
+          .collection(box.get('companyId'))
           .document("${widget.docRef}")
           .collection('history')
           .snapshots(),
@@ -147,7 +175,7 @@ class _HistoryHomePageState extends State<HistoryHomePage> {
     mydata = saledata;
     _generateData(mydata);
     return Padding(
-      padding: EdgeInsets.fromLTRB(4, 10, 4, 30),
+      padding: EdgeInsets.fromLTRB(4, 8, 4, 8),
       child: Container(
         child: Center(
           child: Column(
@@ -164,26 +192,33 @@ class _HistoryHomePageState extends State<HistoryHomePage> {
                   ),
                   animate: true,
                   behaviors: [
-                    charts.ChartTitle("Machine:  $name",
-                        subTitle: "Line Graph",
-                        behaviorPosition: charts.BehaviorPosition.top,
-                        titleOutsideJustification:
-                            charts.OutsideJustification.start,
-                        innerPadding: 40),
+                    // charts.ChartTitle("Machine:  $name",
+                    //     subTitle: "Line Graph",
+                    //     behaviorPosition: charts.BehaviorPosition.top,
+                    //     titleOutsideJustification:
+                    //         charts.OutsideJustification.start,
+                    //     innerPadding: 40),
                     charts.ChartTitle('Date/Timeline',
                         behaviorPosition: charts.BehaviorPosition.bottom,
                         titleOutsideJustification:
                             charts.OutsideJustification.middleDrawArea,
-                        innerPadding: 20),
-                    charts.ChartTitle("Coolant Concentration:  (Limits = " + widget.cMin.toStringAsFixed(0) + "% - " + widget.cMax.toStringAsFixed(0) + "%)",
+                        innerPadding: 6),
+                    charts.ChartTitle(
+                        "Coolant Conc. %:  (Limits = " +
+                            widget.cMin.toStringAsFixed(0) +
+                            "% - " +
+                            widget.cMax.toStringAsFixed(0) +
+                            "%)",
                         behaviorPosition: charts.BehaviorPosition.start,
                         titleOutsideJustification:
                             charts.OutsideJustification.middleDrawArea,
-                        outerPadding: 10),
+                        outerPadding: 6),
                     charts.SlidingViewport(),
                     charts.PanAndZoomBehavior(),
                     charts.RangeAnnotation([
-                      charts.RangeAnnotationSegment(widget.cMin+1, widget.cMax-1,
+                      charts.RangeAnnotationSegment(
+                          widget.cLwarning,
+                          widget.cUwarning,
                           charts.RangeAnnotationAxisType.measure,
                           //startLabel: 'Min',
                           //endLabel: 'Max',
@@ -204,18 +239,25 @@ class _HistoryHomePageState extends State<HistoryHomePage> {
                           labelAnchor: charts.AnnotationLabelAnchor.start,
                           color:
                               charts.MaterialPalette.red.makeShades(100)[90]),
-                      charts.RangeAnnotationSegment(widget.cMin, widget.cMin+1,
+                      charts.RangeAnnotationSegment(
+                          widget.cMin,
+                          widget.cLwarning,
                           charts.RangeAnnotationAxisType.measure,
-                          startLabel: 'Min',
+                          startLabel: 'Warning',
                           labelAnchor: charts.AnnotationLabelAnchor.start,
-                          color:
-                              charts.MaterialPalette.yellow.makeShades(100)[80]),
-                      charts.RangeAnnotationSegment(widget.cMax-1, widget.cMax,
+                          color: charts.MaterialPalette.yellow
+                              .makeShades(100)[80]),
+                      charts.RangeAnnotationSegment(widget.cUwarning,
+                          widget.cMax, charts.RangeAnnotationAxisType.measure,
+                          startLabel: 'Warning',
+                          labelAnchor: charts.AnnotationLabelAnchor.start,
+                          color: charts.MaterialPalette.yellow
+                              .makeShades(100)[80]),
+                      charts.LineAnnotationSegment(widget.cTarget,
                           charts.RangeAnnotationAxisType.measure,
-                          startLabel: 'Max',
-                          labelAnchor: charts.AnnotationLabelAnchor.start,
+                          endLabel: 'Target',
                           color:
-                              charts.MaterialPalette.yellow.makeShades(100)[80]),
+                              charts.MaterialPalette.green.makeShades(100)[1]),
                     ]),
                   ],
                 ),

@@ -7,16 +7,15 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:hive/hive.dart';
-import 'package:toast/toast.dart';
-import 'batch.dart';
-import 'machines.dart';
-import 'qr.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:toast/toast.dart';
+import 'batch.dart';
 import 'extensions.dart';
 import 'generateQr.dart';
+import 'machines.dart';
 import 'namechange.dart';
 
 const greenPercent = Color(0xff14c4f7);
@@ -33,7 +32,7 @@ class _AddMachineListState extends State<AddMachineList> {
     return Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       bottomNavigationBar: BottomAppBar(
-        color: Color(0xFF1c6b92),
+        color: Color(0xFF1c6b98),
         child: Row(
           children: [
             IconButton(
@@ -43,8 +42,8 @@ class _AddMachineListState extends State<AddMachineList> {
           ],
           mainAxisAlignment: MainAxisAlignment.start,
         ),
-        notchMargin: 5.0,
-        shape: CircularNotchedRectangle(),
+        //notchMargin: 0.0,
+        //shape: CircularNotchedRectangle(),
       ),
       appBar: AppBar(
           backgroundColor: Color(0xFF1c6b92),
@@ -55,6 +54,7 @@ class _AddMachineListState extends State<AddMachineList> {
       body: MachineList(),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Color(0xFF1c6b92),
+        elevation: 10,
         onPressed: () {
           showModalBottomSheet<void>(
               context: context,
@@ -119,18 +119,14 @@ class _AddMachineListState extends State<AddMachineList> {
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(10),
                                   gradient: LinearGradient(colors: [
-                                    Colors.lightBlue,
-                                    Colors.lightBlueAccent
+                                    Colors.blue,
+                                    Colors.blueAccent
                                   ])),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(
-                                    Icons.settings_applications,
-                                    color: Colors.white,
-                                  ),
                                   Text(
-                                    'Batch Add',
+                                    ' Batch Add',
                                     style: TextStyle(color: Colors.white),
                                   )
                                 ],
@@ -165,7 +161,7 @@ class _AddMachineListState extends State<AddMachineList> {
                                 ],
                               )),
                         ),
-                      ).padding(),
+                      ).padding()
                     ],
                   ).padding(),
                 );
@@ -201,6 +197,9 @@ class _AddMachinePageState extends State<AddMachinePage> {
   TextEditingController controller;
   String cmin;
   String cmax;
+  String ctarget;
+  String cuwarning;
+  String clwarning;
 
   @override
   Widget build(BuildContext context) {
@@ -209,7 +208,7 @@ class _AddMachinePageState extends State<AddMachinePage> {
           child: Icon(Icons.check),
           onPressed: () {
             var box = Hive.box('myBox');
-            if (cmin != null) {
+            if (cmin != null && cmax != null) {
               Firestore.instance
                   .collection(box.get('companyId'))
                   .document("$name")
@@ -219,7 +218,10 @@ class _AddMachinePageState extends State<AddMachinePage> {
                 "last-updated": "$time",
                 "last-cleaned": "$time",
                 "c-min": "$cmin",
-                "c-max": "$cmax"
+                "c-max": "$cmax",
+                "c-target": "$ctarget",
+                "c-uwarning": "$cuwarning",
+                "c-lwarning": "$clwarning"
               });
               Firestore.instance
                   .collection(box.get('companyId'))
@@ -235,25 +237,16 @@ class _AddMachinePageState extends State<AddMachinePage> {
                   .setData({"data": "0.0", "time": "$time"});
               Navigator.pop(context);
             } else {
-              Toast.show('Enter Min and Max', context,
+              Toast.show('Enter Input Data', context,
                   duration: Toast.LENGTH_LONG);
             }
           }),
       appBar: AppBar(
-        title: Text('Add Machine'),
+        title: Text('Add a Machine'),
         elevation: 0,
         iconTheme: IconThemeData(color: Colors.white),
         actionsIconTheme: IconThemeData(color: Colors.white),
         backgroundColor: Color(0xFF1c6b92),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(
-              Icons.share,
-              color: Colors.white,
-            ),
-            onPressed: _captureAndSharePng,
-          )
-        ],
       ),
       body: _contentWidget(),
     );
@@ -281,30 +274,40 @@ class _AddMachinePageState extends State<AddMachinePage> {
     final bodyHeight = MediaQuery.of(context).size.height -
         MediaQuery.of(context).viewInsets.bottom;
     return Container(
-      color: Colors.white,
-      child: Column(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topRight,
+          end: Alignment.bottomLeft,
+          stops: [0.1, 0.5, 0.7, 0.9],
+          colors: [
+            Colors.white,
+            Colors.blue[50],
+            Colors.lightBlue[100],
+            Colors.lightBlue[50],
+          ],
+        ),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(00.0),
+        // the box shawdow property allows for fine tuning as aposed to shadowColor
+      ),
+      child: ListView(
+        //mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
           Padding(
-            padding: const EdgeInsets.fromLTRB(10, 20, 10, 5),
+            padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
             child: Text(
               "Add a Machine",
-              style: TextStyle(fontSize: 32.0, fontWeight: FontWeight.w400),
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 26.0, fontWeight: FontWeight.w400),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.only(
-              top: 10,
-              left: 20.0,
-              right: 20.0,
-              bottom: 10.0,
-            ),
-            child: Container(
-              height: _topSectionHeight,
-              child: Row(
-                mainAxisSize: MainAxisSize.max,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
-                  Expanded(
+          Container(
+            height: MediaQuery.of(context).size.height * .55,
+            child: Column(
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(5.0),
                     child: TextField(
                       onChanged: (value) {
                         setState(() {
@@ -313,18 +316,34 @@ class _AddMachinePageState extends State<AddMachinePage> {
                       },
                       controller: controller,
                       decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Colors.white,
                           border: OutlineInputBorder(),
                           labelText: 'Add Machine Name',
                           labelStyle: TextStyle(fontSize: 15)),
                     ),
                   ),
-                ],
-              ),
-            ),
-          ),
-          Container(
-            child: Row(
-              children: [
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(5.0),
+                    child: TextField(
+                      onChanged: (value) {
+                        setState(() {
+                          ctarget = value;
+                        });
+                      },
+                      keyboardType: TextInputType.number,
+                      controller: controller,
+                      decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Colors.white,
+                          border: OutlineInputBorder(),
+                          labelText: 'Enter Target Coolant %',
+                          labelStyle: TextStyle(fontSize: 15)),
+                    ),
+                  ),
+                ),
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.all(5.0),
@@ -334,8 +353,11 @@ class _AddMachinePageState extends State<AddMachinePage> {
                           cmin = value;
                         });
                       },
+                      keyboardType: TextInputType.number,
                       controller: controller,
                       decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Colors.white,
                           border: OutlineInputBorder(),
                           labelText: 'Enter Min Coolant %',
                           labelStyle: TextStyle(fontSize: 15)),
@@ -351,42 +373,59 @@ class _AddMachinePageState extends State<AddMachinePage> {
                           cmax = value;
                         });
                       },
+                      keyboardType: TextInputType.number,
                       controller: controller,
                       decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Colors.white,
                           border: OutlineInputBorder(),
                           labelText: 'Enter Max Coolant %',
                           labelStyle: TextStyle(fontSize: 15)),
                     ),
                   ),
                 ),
-              ],
-            ).padding(),
-          ),
-          Expanded(
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(
-                        10,
-                      )),
+                Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: RepaintBoundary(
-                      key: globalKey,
-                      child: QrImage(
-                        backgroundColor: Colors.white,
-                        foregroundColor: Colors.black,
-                        data: _dataString,
-                        size: 0.4 * bodyHeight,
-                      ),
+                    padding: const EdgeInsets.all(5.0),
+                    child: TextField(
+                      onChanged: (value) {
+                        setState(() {
+                          cuwarning = value;
+                        });
+                      },
+                      keyboardType: TextInputType.number,
+                      controller: controller,
+                      decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Colors.white,
+                          border: OutlineInputBorder(),
+                          labelText: 'Enter Upper Warning %',
+                          labelStyle: TextStyle(fontSize: 15)),
                     ),
                   ),
                 ),
-              ),
-            ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(5.0),
+                    child: TextField(
+                      onChanged: (value) {
+                        setState(() {
+                          clwarning = value;
+                        });
+                      },
+                      keyboardType: TextInputType.number,
+                      controller: controller,
+                      decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Colors.white,
+                          border: OutlineInputBorder(),
+                          labelText: 'Enter Lower Warning %',
+                          labelStyle: TextStyle(fontSize: 15)),
+                    ),
+                  ),
+                ),
+              ],
+            ).padding(),
           ),
         ],
       ),
@@ -407,7 +446,7 @@ Widget _handleWidget() {
             body: Center(
                 child: Text("Denied: Must be an Administrator",
                     style: new TextStyle(
-                      fontSize: 20.0,
+                      fontSize: 16.0,
                       fontWeight: FontWeight.w500,
                       color: Colors.red,
                     ))));
@@ -431,7 +470,7 @@ Widget _handleWidgetBatch() {
             body: Center(
                 child: Text("Denied: Must be an Administrator",
                     style: new TextStyle(
-                      fontSize: 20.0,
+                      fontSize: 16.0,
                       fontWeight: FontWeight.w500,
                       color: Colors.red,
                     ))));

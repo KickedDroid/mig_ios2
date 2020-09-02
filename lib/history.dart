@@ -39,23 +39,27 @@ class HistoryPage extends StatelessWidget {
                 DocumentSnapshot machines = snapshot.data.documents[index];
                 return Column(
                   children: [
-                    ListTile(
-                      title: Text(machines['name']),
-                      leading: Icon(Icons.show_chart),
-                      trailing: Icon(Icons.arrow_forward_ios),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => MachineGraph(
-                                machines.documentID,
-                                double.parse(machines['c-min']),
-                                double.parse(machines['c-max'])),
-                          ),
-                        );
-                      },
+                    Card(
+                      elevation: 5,
+                      child: ListTile(
+                        title: Text(machines['name']),
+                        leading: Icon(Icons.show_chart),
+                        trailing: Icon(Icons.arrow_forward_ios),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => MachineGraph(
+                                    machines.documentID,
+                                    double.parse(machines['c-min']),
+                                    double.parse(machines['c-max']),
+                                    double.parse(machines['c-target']),
+                                    double.parse(machines['c-uwarning']),
+                                    double.parse(machines['c-lwarning']))),
+                          );
+                        },
+                      ),
                     ),
-                    Divider(color: Colors.lightBlue),
                   ],
                 );
               },

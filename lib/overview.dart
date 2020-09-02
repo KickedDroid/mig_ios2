@@ -16,6 +16,14 @@ class _OverviewState extends State<Overview> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text('Overview of Machines'),
+        toolbarHeight:
+            MediaQuery.of(context).orientation == Orientation.portrait
+                ? AppBar().preferredSize.height
+                : 0,
+        backgroundColor: Color(0xFF1c6b92),
+      ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       bottomNavigationBar: BottomAppBar(
         color: Color(0xFF1c6b92),
@@ -34,13 +42,30 @@ class _OverviewState extends State<Overview> {
       backgroundColor: Colors.lightBlue[200],
       body: Container(
         decoration: BoxDecoration(
-            image: DecorationImage(
-                image: AssetImage("assets/Coolantbg.png"), fit: BoxFit.fill)),
-        child: ListView(children: <Widget>[
+            gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          stops: [.0, .2, .7, 1],
+          colors: [
+            Color(0xFF192b32),
+            Color(0xFF1c6b92),
+            Color(0xFF1c6b92),
+            Color(0xFF192b32),
+
+            // #0b1c36 dark purple blue
+            // #c74300 orange
+            // #446280 bluish orange
+            // #abc0df light blue
+            // #395473
+            // #1c6b92
+            // #8eaec9 Light Blue
+          ],
+        )),
+        child: ListView(shrinkWrap: true, children: <Widget>[
           Column(
             children: <Widget>[
               Padding(
-                padding: const EdgeInsets.fromLTRB(8, 10, 8, 0),
+                padding: const EdgeInsets.fromLTRB(8, 10, 8, 10),
                 child: SafeArea(
                   child: Text(
                     'Machine Overview',
@@ -53,7 +78,7 @@ class _OverviewState extends State<Overview> {
               ),
               Center(
                 child: Padding(
-                  padding: const EdgeInsets.all(15.0),
+                  padding: const EdgeInsets.all(10.0),
                   child: SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: SingleChildScrollView(
@@ -78,17 +103,21 @@ Widget _buildBody(BuildContext context) {
     builder: (context, snapshot) {
       assert(snapshot != null);
       if (!snapshot.hasData) {
-        return LinearProgressIndicator();
+        return SizedBox(
+            height: 2.0, width: 20.0, child: LinearProgressIndicator());
       } else {
         return ClipRRect(
           borderRadius: BorderRadius.circular(10.0),
           child: Container(
+            constraints: BoxConstraints(
+              maxWidth: 800.0,
+            ),
             color: Colors.white,
             child: DataTable(columns: [
               DataColumn(label: Text('Name')),
-              DataColumn(label: Text('Last Updated')),
-              DataColumn(label: Text('Coolant\nPercentage')),
-              DataColumn(label: Text('Last Cleaned')),
+              DataColumn(label: Text('Coolant %')),
+              DataColumn(label: Text('Last\nUpdate')),
+              DataColumn(label: Text('Last\nCleaned')),
             ], rows: _buildList(context, snapshot.data.documents)),
           ),
         );
@@ -112,41 +141,57 @@ DataRow _buildListItem(BuildContext context, DocumentSnapshot snapshot) {
 
   return DataRow(
     cells: [
-      DataCell(Text(
-        machines['name'],
-        style: TextStyle(fontWeight: FontWeight.w500),
+      DataCell(Container(
+        width: 80,
+        child: Text(
+          machines['name'].length > 17
+              ? machines['name'].substring(0, 16) + "..."
+              : machines['name'],
+          style: TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
+        ),
       )),
-      DataCell(Text(
-        machines['last-updated'].substring(5, 7) +
-            "/" +
-            machines['last-updated'].substring(8, 10) +
-            "/" +
-            machines['last-updated'].substring(2, 4),
-        style: TextStyle(fontWeight: FontWeight.w500),
+      DataCell(Container(
+        width: 45,
+        child: Text(
+            machines['coolant-percent'] +
+                "% (" +
+                machines['c-min'] +
+                "-" +
+                machines['c-max'] +
+                ")",
+            style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
+                color: double.parse(machines['coolant-percent']) <
+                            double.parse(machines['c-max']) &&
+                        double.parse(machines['coolant-percent']) >
+                            double.parse(machines['c-min'])
+                    ? Colors.greenAccent[700]
+                    : Colors.red)),
       )),
-      DataCell(Text(
-          machines['coolant-percent'] +
-              "% (" +
-              machines['c-min'] +
-              "-" +
-              machines['c-max'] +
-              ")",
-          style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: double.parse(machines['coolant-percent']) <
-                          double.parse(machines['c-max']) &&
-                      double.parse(machines['coolant-percent']) >
-                          double.parse(machines['c-min'])
-                  ? Colors.greenAccent[700]
-                  : Colors.red))),
-      DataCell(Text(
-        machines['last-cleaned'].substring(5, 7) +
-                "/" +
-                machines['last-cleaned'].substring(8, 10) +
-                "/" +
-                machines['last-cleaned'].substring(2, 4) ??
-            "No Input",
-        style: TextStyle(fontWeight: FontWeight.w500),
+      DataCell(Container(
+        width: 45,
+        child: Text(
+          machines['last-updated'].substring(5, 7) +
+              "/" +
+              machines['last-updated'].substring(8, 10), // +
+          //"/" +
+          //machines['last-updated'].substring(2, 4),
+          style: TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
+        ),
+      )),
+      DataCell(Container(
+        width: 45,
+        child: Text(
+          machines['last-cleaned'].substring(5, 7) +
+                  "/" +
+                  machines['last-cleaned'].substring(8, 10) // +
+              //"/" +
+              //machines['last-cleaned'].substring(2, 4)
+              ??
+              "No Input",
+          style: TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
+        ),
       )),
     ],
   );

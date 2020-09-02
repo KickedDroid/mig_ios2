@@ -196,6 +196,20 @@ class NotesPage extends StatefulWidget {
 class _NotesPageState extends State<NotesPage> {
   var box = Hive.box('myBox');
 
+  List<String> _listViewData = [];
+
+  _onChanged(String value) {
+    Firestore.instance
+        .collection(box.get('comapanyId'))
+        .getDocuments()
+        .then((query) => query.documents.forEach((element) {
+              _listViewData.add(element.data['name']);
+            }));
+    print(_listViewData);
+  }
+
+  TextEditingController _textController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -214,43 +228,73 @@ class _NotesPageState extends State<NotesPage> {
         shape: CircularNotchedRectangle(),
       ),
       appBar: AppBar(
+        actions: [
+          IconButton(
+              icon: Icon(
+                Icons.search,
+                color: Colors.white,
+              ),
+              onPressed: () {
+                showDialog(
+                    context: context,
+                    builder: (_) => new AlertDialog(
+                          title: new Text("Material Dialog"),
+                          content: TextField(
+                            controller: _textController,
+                            onChanged: (value) {
+                              _onChanged(value);
+                            },
+                          ),
+                          actions: <Widget>[
+                            FlatButton(
+                              child: Text('Close me!'),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            )
+                          ],
+                        ));
+              })
+        ],
         title: Text('Notes'),
         backgroundColor: Color(0xFF1c6b92),
       ),
-      body: StreamBuilder(
-        stream: Firestore.instance.collection(box.get('companyId')).snapshots(),
-        builder: (context, snapshot) {
-          assert(snapshot != null);
-          if (!snapshot.hasData) {
-            return Text('Please Wait');
-          } else {
-            return ListView.builder(
-              itemCount: snapshot.data.documents.length,
-              itemBuilder: (context, index) {
-                DocumentSnapshot machines = snapshot.data.documents[index];
-                return Column(
-                  children: [
-                    ListTile(
-                      title: Text(machines['name']),
-                      leading: Icon(Icons.note),
-                      trailing: Icon(Icons.arrow_forward_ios),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                NotesList(machines.documentID),
-                          ),
-                        );
-                      },
-                    ),
-                    Divider()
-                  ],
+      body: Container(
+        child: StreamBuilder(
+            stream:
+                Firestore.instance.collection(box.get('companyId')).snapshots(),
+            builder: (context, snapshot) {
+              assert(snapshot != null);
+              if (!snapshot.hasData) {
+                return Text('Please Wait');
+              } else {
+                return ListView.builder(
+                  itemCount: snapshot.data.documents.length,
+                  itemBuilder: (context, index) {
+                    DocumentSnapshot machines = snapshot.data.documents[index];
+                    return Column(
+                      children: [
+                        ListTile(
+                          title: Text(machines['name']),
+                          leading: Icon(Icons.note),
+                          trailing: Icon(Icons.arrow_forward_ios),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    NotesList(machines.documentID),
+                              ),
+                            );
+                          },
+                        ),
+                        Divider()
+                      ],
+                    );
+                  },
                 );
-              },
-            );
-          }
-        },
+              }
+            }),
       ),
     );
   }
