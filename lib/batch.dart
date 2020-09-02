@@ -6,11 +6,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:hive/hive.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'main.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:toast/toast.dart';
 import 'package:screenshot/screenshot.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:dio/dio.dart';
 
 class BatchAddPage extends StatefulWidget {
   @override
@@ -23,12 +28,21 @@ class _BatchAddPageState extends State<BatchAddPage> {
   String cmin;
   String cmax;
 
+  String ctarget;
+
+  String cuwarning;
+
+  String clwarning;
+
   getTextInputData() {
     setState(() {
       numOf = int.parse(controller.text);
       batchName = controller2.text;
       cmin = controllerCmin.text;
       cmax = controllerCmax.text;
+      ctarget = controllerCtarget.text;
+      cuwarning = controllerCuwarning.text;
+      clwarning = controllerClwarning.text;
     });
   }
 
@@ -60,6 +74,9 @@ class _BatchAddPageState extends State<BatchAddPage> {
   final TextEditingController controller2 = TextEditingController();
   final TextEditingController controllerCmin = TextEditingController();
   final TextEditingController controllerCmax = TextEditingController();
+  final TextEditingController controllerCtarget = TextEditingController();
+  final TextEditingController controllerCuwarning = TextEditingController();
+  final TextEditingController controllerClwarning = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -116,24 +133,86 @@ class _BatchAddPageState extends State<BatchAddPage> {
                 labelStyle: TextStyle(fontSize: 15),
               ),
             ).padding(),
-            TextFormField(
-              controller: controllerCmin,
-              style: TextStyle(color: Colors.black, fontFamily: 'SFUIDisplay'),
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Min',
-                labelStyle: TextStyle(fontSize: 15),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
+              child: TextFormField(
+                controller: controllerCtarget,
+                keyboardType: TextInputType.number,
+                style:
+                    TextStyle(color: Colors.black, fontFamily: 'SFUIDisplay'),
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(),
+                  labelText: 'Target Coolant %',
+                  labelStyle: TextStyle(fontSize: 15),
+                ),
               ),
-            ).padding(),
-            TextFormField(
-              controller: controllerCmax,
-              style: TextStyle(color: Colors.black, fontFamily: 'SFUIDisplay'),
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Max',
-                labelStyle: TextStyle(fontSize: 15),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
+              child: TextFormField(
+                controller: controllerCmax,
+                keyboardType: TextInputType.number,
+                style:
+                    TextStyle(color: Colors.black, fontFamily: 'SFUIDisplay'),
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(),
+                  labelText: 'Max Limit %',
+                  labelStyle: TextStyle(fontSize: 15),
+                ),
               ),
-            ).padding(),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
+              child: TextFormField(
+                controller: controllerCmin,
+                keyboardType: TextInputType.number,
+                style:
+                    TextStyle(color: Colors.black, fontFamily: 'SFUIDisplay'),
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(),
+                  labelText: 'Min Limit %',
+                  labelStyle: TextStyle(fontSize: 15),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
+              child: TextFormField(
+                controller: controllerCuwarning,
+                keyboardType: TextInputType.number,
+                style:
+                    TextStyle(color: Colors.black, fontFamily: 'SFUIDisplay'),
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(),
+                  labelText: 'Upper Warning %',
+                  labelStyle: TextStyle(fontSize: 15),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
+              child: TextFormField(
+                controller: controllerClwarning,
+                keyboardType: TextInputType.number,
+                style:
+                    TextStyle(color: Colors.black, fontFamily: 'SFUIDisplay'),
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(),
+                  labelText: 'Lower Warning %',
+                  labelStyle: TextStyle(fontSize: 15),
+                ),
+              ),
+            ),
             Text(
               'This screen allows you to setup multiple machines at once',
               style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
@@ -200,6 +279,66 @@ class _BatchQrCodesState extends State<BatchQrCodes> {
     }
   }
 
+  Future<void> createPdf() async {
+    final pdf = pw.Document();
+
+    final data = await Firestore.instance
+        .collection(box.get('companyId'))
+        .getDocuments();
+    pdf.addPage(
+      pw.Page(
+        pageFormat: PdfPageFormat.a4,
+        build: (pw.Context context) {
+          return pw.Center(
+            child: pw.ListView.builder(
+              itemCount: data.documents.length,
+              itemBuilder: (context, index) {
+                DocumentSnapshot machines = data.documents[index];
+                return pw.Column(children: [
+                  pw.Text(machines['name']),
+                  pw.BarcodeWidget(
+                    barcode: pw.Barcode.qrCode(),
+                    data: machines.documentID,
+                  )
+                ]);
+              },
+            ),
+          );
+        },
+      ),
+    );
+    final tempDir = await getTemporaryDirectory();
+    final file = await new File('${tempDir.path}/batch.pdf').create();
+    await file.writeAsBytes(pdf.save());
+    await Share.file(_dataString, 'batch.pdf', pdf.save(), 'batch/pdf');
+  }
+
+  getPermission() async {
+    await Permission.photos.request();
+    var status = await Permission.photos.status;
+    print(status);
+  }
+
+  final pdf = pw.Document();
+
+  getQrCodes() async {
+    var docs = await Firestore.instance
+        .collection(box.get('companyId'))
+        .getDocuments();
+    docs.documents.forEach((document) async {
+      var response = await Dio().get(
+          "https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${document.documentID}",
+          options: Options(responseType: ResponseType.bytes));
+      final result = await ImageGallerySaver.saveImage(
+          Uint8List.fromList(response.data),
+          quality: 100,
+          name: "${document.data['name']}");
+      print(result);
+    });
+
+    Toast.show('Check Your Photos', context);
+  }
+
   var box = Hive.box('myBox');
   @override
   Widget build(BuildContext context) {
@@ -208,8 +347,8 @@ class _BatchQrCodesState extends State<BatchQrCodes> {
       child: Scaffold(
         floatingActionButton: FloatingActionButton(
             child: Icon(Icons.share),
-            onPressed: () {
-              _captureAndSharePng();
+            onPressed: () async {
+              await getQrCodes();
             }),
         body: SafeArea(
           child: SingleChildScrollView(
