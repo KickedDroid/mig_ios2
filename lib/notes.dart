@@ -116,9 +116,7 @@ class _NotesListState extends State<NotesList> {
             if (!snapshot.hasData) {
               return Text('Please Wait');
             } else {
-              return ListView.separated(
-                separatorBuilder: (context, index) =>
-                    Divider(color: Colors.lightBlue),
+              return ListView.builder(
                 itemCount: snapshot.data.documents.length,
                 itemBuilder: (context, index) {
                   DocumentSnapshot machines = snapshot.data.documents[index];
@@ -143,9 +141,11 @@ class _NotesListState extends State<NotesList> {
                     ],
                     actionPane: SlidableDrawerActionPane(),
                     actionExtentRatio: 0.25,
-                    child: MachineItem(
-                      notes: machines['note'],
-                      name: machines['time'],
+                    child: Card(
+                      child: MachineItem(
+                        notes: machines['note'],
+                        name: machines['time'],
+                      ),
                     ),
                   );
                 },
@@ -272,24 +272,25 @@ class _NotesPageState extends State<NotesPage> {
                   itemCount: snapshot.data.documents.length,
                   itemBuilder: (context, index) {
                     DocumentSnapshot machines = snapshot.data.documents[index];
-                    return Column(
-                      children: [
-                        ListTile(
-                          title: Text(machines['name']),
-                          leading: Icon(Icons.note),
-                          trailing: Icon(Icons.arrow_forward_ios),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    NotesList(machines.documentID),
-                              ),
-                            );
-                          },
-                        ),
-                        Divider()
-                      ],
+                    return Card(
+                      child: Column(
+                        children: [
+                          ListTile(
+                            title: Text(machines['name']),
+                            leading: Icon(Icons.note),
+                            trailing: Icon(Icons.arrow_forward_ios),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      NotesList(machines.documentID),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
                     );
                   },
                 );
