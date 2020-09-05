@@ -1,0 +1,5 @@
+version: "Apple Swift version 5.2.4 (swiftlang-1103.0.32.9 clang-1103.0.32.53)"
+options: "c2196b8f3e13ae0e42d41638b88f7390"
+build_time: [1599298902, 215966000]
+inputs:
+  "/Users/shaneanderson/GitHub/mig_ios2/ios/Runner/AppDelegate.swift": [1599296742, 346825160]
