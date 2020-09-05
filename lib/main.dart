@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:hive/hive.dart';
 import 'package:mig_ios2/initialpage.dart';
+import 'package:mig_ios2/notif.dart';
 import 'package:notification_banner/notification_banner.dart';
 import 'batch.dart';
 import 'graph.dart';
@@ -144,37 +145,40 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   void initState() {
     super.initState();
     flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
-    var android = new AndroidInitializationSettings('@mipmap/ic_launcher');
+    var android = new AndroidInitializationSettings('/assets/logosb.png');
     var iOS = new IOSInitializationSettings();
     var initSetttings = new InitializationSettings(android, iOS);
     flutterLocalNotificationsPlugin.initialize(initSetttings,
         onSelectNotification: onSelectNotification);
-    getPermission();
+    if (box.get('notif') == true) {
+      var checkMachines2 = checkMachines();
+      if (checkMachines2 != null) {
+        checkMachines2.then((value) {
+          showNotification(value);
+        });
+      }
+    }
   }
 
   Future onSelectNotification(String payload) {
-    debugPrint("payload : $payload");
-    showDialog(
-      context: context,
-      builder: (_) => new AlertDialog(
-        title: new Text('Notification'),
-        content: new Text('$payload'),
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AddMachineList(),
       ),
     );
   }
 
-  showNotification() async {
-    NotificationBanner(context)
-      ..setTapCallback(() {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => AddMachineList()),
-        );
-      })
-      ..setTimeout(Duration(seconds: 4))
-      ..setBgColor(Colors.white)
-      ..setMessage('Machines Need Updating')
-      ..show(Appearance.top);
+  showNotification(String payload) async {
+    var android = new AndroidNotificationDetails(
+        'channel id', 'channel NAME', 'CHANNEL DESCRIPTION',
+        priority: Priority.High, importance: Importance.Max);
+    var iOS = new IOSNotificationDetails();
+    var platform = new NotificationDetails(android, iOS);
+    var scheduledNotificationDateTime =
+        DateTime.now().add(Duration(minutes: 1));
+    await flutterLocalNotificationsPlugin.schedule(
+        0, 'Warning', '$payload', scheduledNotificationDateTime, platform);
   }
 
   String qrText;
@@ -481,73 +485,68 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     ),
                   ),
                 ),
-                GestureDetector(
-                  onTap: () {
-                    showNotification();
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(15, 5, 15, 0),
-                    child: Card(
-                      elevation: 5,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      child: Column(
-                        children: <Widget>[
-                          ListTile(
-                            //dense: true,
-                            title: Text(
-                              'Diluted',
-                              style: TextStyle(
-                                  color: Color(0xFF3c6172),
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w500),
-                            ),
-                            subtitle: Text(
-                                "Machines with the lowest coolant concentration"),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(15, 5, 15, 0),
+                  child: Card(
+                    elevation: 5,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    child: Column(
+                      children: <Widget>[
+                        ListTile(
+                          //dense: true,
+                          title: Text(
+                            'Diluted',
+                            style: TextStyle(
+                                color: Color(0xFF3c6172),
+                                fontSize: 20,
+                                fontWeight: FontWeight.w500),
                           ),
-                          StreamBuilder(
-                            stream: Firestore.instance
-                                .collection(box.get('companyId'))
-                                .orderBy('coolant-percent', descending: false)
-                                .snapshots(),
-                            builder: (context, snapshot) {
-                              assert(snapshot != null);
-                              if (!snapshot.hasData) {
-                                return Text('Please Wait');
-                              } else {
-                                return ListView.builder(
-                                  shrinkWrap: true,
-                                  itemCount: 2,
-                                  itemBuilder: (context, index) {
-                                    DocumentSnapshot machines =
-                                        snapshot.data.documents[index];
-                                    return ListTile(
-                                      dense: true,
-                                      title: Text('${machines['name']}'),
-                                      leading: Icon(Icons.trending_down),
-                                      trailing: Text(
-                                          "${double.parse(machines['coolant-percent'])}",
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              color: double.parse(machines[
-                                                              'coolant-percent']) <
-                                                          double.parse(machines[
-                                                              'c-max']) &&
-                                                      double.parse(machines[
-                                                              'coolant-percent']) >
-                                                          double.parse(
-                                                              machines['c-min'])
-                                                  ? Colors.greenAccent[700]
-                                                  : Colors.red)),
-                                    );
-                                  },
-                                ); //subtitle: Text('Date:  ${machines['last-updated'].substring(5,10)}'),
-                              }
-                            },
-                          )
-                        ],
-                      ),
+                          subtitle: Text(
+                              "Machines with the lowest coolant concentration"),
+                        ),
+                        StreamBuilder(
+                          stream: Firestore.instance
+                              .collection(box.get('companyId'))
+                              .orderBy('coolant-percent', descending: false)
+                              .snapshots(),
+                          builder: (context, snapshot) {
+                            assert(snapshot != null);
+                            if (!snapshot.hasData) {
+                              return Text('Please Wait');
+                            } else {
+                              return ListView.builder(
+                                shrinkWrap: true,
+                                itemCount: 2,
+                                itemBuilder: (context, index) {
+                                  DocumentSnapshot machines =
+                                      snapshot.data.documents[index];
+                                  return ListTile(
+                                    dense: true,
+                                    title: Text('${machines['name']}'),
+                                    leading: Icon(Icons.trending_down),
+                                    trailing: Text(
+                                        "${double.parse(machines['coolant-percent'])}",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: double.parse(machines[
+                                                            'coolant-percent']) <
+                                                        double.parse(machines[
+                                                            'c-max']) &&
+                                                    double.parse(machines[
+                                                            'coolant-percent']) >
+                                                        double.parse(
+                                                            machines['c-min'])
+                                                ? Colors.greenAccent[700]
+                                                : Colors.red)),
+                                  );
+                                },
+                              ); //subtitle: Text('Date:  ${machines['last-updated'].substring(5,10)}'),
+                            }
+                          },
+                        )
+                      ],
                     ),
                   ),
                 ),
