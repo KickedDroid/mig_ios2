@@ -37,6 +37,9 @@
 	<key>NSMotionUsageDescription</key>
 	<string>Contact permission is required for qrcode scanning.</string>
 
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Contact permission is required for qrcode scanning.</string>
+
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Camera permission is required for qrcode scanning.</string>
 	<key>UILaunchStoryboardName</key>
