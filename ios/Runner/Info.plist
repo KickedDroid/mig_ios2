@@ -24,6 +24,22 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>Camera permission is required for qrcode scanning.</string>
+
+	<key>NSContactsUsageDescription</key>
+	<string>Contact permission is required for qrcode scanning.</string>
+
+	<key>NSCalendarsUsageDescription</key>
+	<string>Contact permission is required for qrcode scanning.</string>
+
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Contact permission is required for qrcode scanning.</string>
+
+	<key>NSMotionUsageDescription</key>
+	<string>Contact permission is required for qrcode scanning.</string>
+
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Contact permission is required for qrcode scanning.</string>
+
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Camera permission is required for qrcode scanning.</string>
 	<key>UILaunchStoryboardName</key>
