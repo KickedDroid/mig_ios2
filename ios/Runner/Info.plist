@@ -15,7 +15,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>$(FLUTTER_BUILD_NAME)</string>
+	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleURLTypes</key>
@@ -30,9 +30,11 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>Play using while Updating Coolant Concentration</string>
 	<key>NSCalendarsUsageDescription</key>
 	<string>Contact permission is required for qrcode scanning.</string>
 	<key>NSCameraUsageDescription</key>
@@ -47,13 +49,8 @@
 	<string>Camera permission is required for qrcode scanning.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Contact permission is required for qrcode scanning.</string>
-
 	<key>NSSpeechRecognitionUsageDescription</key>
-	<string>Contact permission is required for qrcode scanning.</string>
-
-	<key>NSAppleMusicUsageDescription</key>
-	<string>Contact permission is required for qrcode scanning.</string>
-
+	<string>recognize speech</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
