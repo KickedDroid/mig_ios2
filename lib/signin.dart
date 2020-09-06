@@ -295,22 +295,6 @@ class _SignInPageState extends State<SignInPage> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      if (companyId != null) {
-                        signInWithGoogle();
-                        var box = Hive.box('myBox');
-                        box.put('companyId', companyId);
-                        box.put('admin', false);
-                      } else {
-                        Toast.show("Enter a Company ID", context, duration: 4);
-                      }
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.all(15.0),
-                      child: Text("Sign in with Google"),
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
                       resetPassword(emailData);
                     },
                     child: Padding(
