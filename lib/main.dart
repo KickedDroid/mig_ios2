@@ -118,7 +118,7 @@ Widget _handleWidget() {
           if (snapshot.hasData) {
             return WelcomeScreen();
           } else {
-            return InitialPage();
+            return SignInPage();
             //return WelcomeScreen();
           }
         }
@@ -176,7 +176,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     var iOS = new IOSNotificationDetails();
     var platform = new NotificationDetails(android, iOS);
     var scheduledNotificationDateTime =
-        DateTime.now().add(Duration(minutes: 1));
+        DateTime.now().add(Duration(seconds: 5));
     await flutterLocalNotificationsPlugin.schedule(
         0, 'Warning', '$payload', scheduledNotificationDateTime, platform);
   }
