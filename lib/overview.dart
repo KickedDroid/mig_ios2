@@ -41,6 +41,7 @@ class _OverviewState extends State<Overview> {
       ),
       backgroundColor: Colors.lightBlue[200],
       body: Container(
+        height: MediaQuery.of(context).size.height,
         decoration: BoxDecoration(
             gradient: LinearGradient(
           begin: Alignment.topCenter,

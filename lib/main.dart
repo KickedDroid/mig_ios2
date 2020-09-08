@@ -74,6 +74,7 @@ class MyApp extends StatelessWidget {
         '/Machines': (BuildContext context) => MachineList(),
         '/Addmachines': (BuildContext context) => AddMachineList(),
         '/Notes': (BuildContext context) => NotesPage(),
+        '/Graph': (BuildContext context) => HistoryPage(),
         '/BatchQrCodes': (BuildContext context) => BatchQrCodes(),
         '/Useraccount': (BuildContext context) => new UserAccount(),
         '/Overview': (BuildContext context) => new Overview(),
@@ -215,7 +216,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                 Expanded(
                   flex: 1,
                   child: Container(
-                    width: MediaQuery.of(context).size.width * 1.0,
+                    width: MediaQuery.of(context).size.width * .5,
                     child: DrawerHeader(
                       decoration: BoxDecoration(
                           image: DecorationImage(
@@ -255,13 +256,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       title: Text("Terms & Conditions"),
                       onTap: () {
                         Navigator.pushNamed(context, '/TDC');
-                      },
-                    ),
-                    ListTile(
-                      leading: Icon(Icons.settings),
-                      title: new Text("Settings"),
-                      onTap: () {
-                        Navigator.of(context).pop();
                       },
                     ),
                     ListTile(
@@ -461,7 +455,11 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                               } else {
                                 return ListView.builder(
                                   shrinkWrap: true,
-                                  itemCount: 2,
+                                  itemCount: snapshot.data.documents.length ==
+                                              1 ||
+                                          snapshot.data.documents.length == 0
+                                      ? snapshot.data.documents.length
+                                      : 2,
                                   itemBuilder: (context, index) {
                                     DocumentSnapshot machines =
                                         snapshot.data.documents[index];
@@ -518,7 +516,11 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                             } else {
                               return ListView.builder(
                                 shrinkWrap: true,
-                                itemCount: 2,
+                                itemCount:
+                                    snapshot.data.documents.length == 1 ||
+                                            snapshot.data.documents.length == 0
+                                        ? snapshot.data.documents.length
+                                        : 2,
                                 itemBuilder: (context, index) {
                                   DocumentSnapshot machines =
                                       snapshot.data.documents[index];
@@ -581,7 +583,10 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                           } else {
                             return ListView.builder(
                               shrinkWrap: true,
-                              itemCount: 2,
+                              itemCount: snapshot.data.documents.length == 1 ||
+                                      snapshot.data.documents.length == 0
+                                  ? snapshot.data.documents.length
+                                  : 2,
                               itemBuilder: (context, index) {
                                 DocumentSnapshot machines =
                                     snapshot.data.documents[index];
