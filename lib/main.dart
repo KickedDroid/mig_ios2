@@ -2,7 +2,6 @@ import 'package:barcode_scan/platform_wrapper.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:hive/hive.dart';
 import 'package:mig_ios2/initialpage.dart';
 import 'package:mig_ios2/notif.dart';
@@ -100,9 +99,6 @@ void signOut() async {
 }
 
 void signOutGoogle() async {
-  final GoogleSignIn googleSignIn = GoogleSignIn();
-  await googleSignIn.signOut();
-
   print("User Sign Out");
 }
 
