@@ -4,8 +4,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:hive/hive.dart';
+import 'package:mig_ios2/diluted.dart';
 import 'package:mig_ios2/initialpage.dart';
 import 'package:mig_ios2/notif.dart';
+import 'package:mig_ios2/strongcoolant.dart';
 import 'package:notification_banner/notification_banner.dart';
 import 'batch.dart';
 import 'graph.dart';
@@ -483,8 +485,94 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(15, 5, 15, 0),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => DilutedPage(),
+                      ),
+                    );
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(15, 5, 15, 0),
+                    child: Card(
+                      elevation: 5,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      child: Column(
+                        children: <Widget>[
+                          ListTile(
+                            //dense: true,
+                            title: Text(
+                              'Diluted',
+                              style: TextStyle(
+                                  color: Color(0xFF3c6172),
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w500),
+                            ),
+                            subtitle: Text(
+                                "Machines with the lowest coolant concentration"),
+                          ),
+                          StreamBuilder(
+                            stream: Firestore.instance
+                                .collection(box.get('companyId'))
+                                .orderBy('coolant-percent', descending: false)
+                                .snapshots(),
+                            builder: (context, snapshot) {
+                              assert(snapshot != null);
+                              if (!snapshot.hasData) {
+                                return Text('Please Wait');
+                              } else {
+                                return ListView.builder(
+                                  shrinkWrap: true,
+                                  itemCount: snapshot.data.documents.length ==
+                                              1 ||
+                                          snapshot.data.documents.length == 0
+                                      ? snapshot.data.documents.length
+                                      : 2,
+                                  itemBuilder: (context, index) {
+                                    DocumentSnapshot machines =
+                                        snapshot.data.documents[index];
+                                    return ListTile(
+                                      dense: true,
+                                      title: Text('${machines['name']}'),
+                                      leading: Icon(Icons.trending_down),
+                                      trailing: Text(
+                                          "${double.parse(machines['coolant-percent'])}",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              color: double.parse(machines[
+                                                              'coolant-percent']) <
+                                                          double.parse(machines[
+                                                              'c-max']) &&
+                                                      double.parse(machines[
+                                                              'coolant-percent']) >
+                                                          double.parse(
+                                                              machines['c-min'])
+                                                  ? Colors.greenAccent[700]
+                                                  : Colors.red)),
+                                    );
+                                  },
+                                ); //subtitle: Text('Date:  ${machines['last-updated'].substring(5,10)}'),
+                              }
+                            },
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => StrongPage(),
+                      ),
+                    );
+                  },
                   child: Card(
                     elevation: 5,
                     shape: RoundedRectangleBorder(
@@ -495,19 +583,19 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                         ListTile(
                           //dense: true,
                           title: Text(
-                            'Diluted',
+                            'Strong',
                             style: TextStyle(
                                 color: Color(0xFF3c6172),
                                 fontSize: 20,
                                 fontWeight: FontWeight.w500),
                           ),
                           subtitle: Text(
-                              "Machines with the lowest coolant concentration"),
+                              "Machines with the highest coolant concentration"),
                         ),
                         StreamBuilder(
                           stream: Firestore.instance
                               .collection(box.get('companyId'))
-                              .orderBy('coolant-percent', descending: false)
+                              .orderBy('coolant-percent', descending: true)
                               .snapshots(),
                           builder: (context, snapshot) {
                             assert(snapshot != null);
@@ -526,10 +614,11 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                                       snapshot.data.documents[index];
                                   return ListTile(
                                     dense: true,
-                                    title: Text('${machines['name']}'),
-                                    leading: Icon(Icons.trending_down),
-                                    trailing: Text(
-                                        "${double.parse(machines['coolant-percent'])}",
+                                    title: Text(machines['name'] != null
+                                        ? machines['name']
+                                        : "No Data"),
+                                    leading: Icon(Icons.trending_up),
+                                    trailing: Text(machines['coolant-percent'],
                                         style: TextStyle(
                                             fontWeight: FontWeight.bold,
                                             color: double.parse(machines[
@@ -550,74 +639,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                         )
                       ],
                     ),
-                  ),
-                ),
-                Card(
-                  elevation: 5,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  child: Column(
-                    children: <Widget>[
-                      ListTile(
-                        //dense: true,
-                        title: Text(
-                          'Strong',
-                          style: TextStyle(
-                              color: Color(0xFF3c6172),
-                              fontSize: 20,
-                              fontWeight: FontWeight.w500),
-                        ),
-                        subtitle: Text(
-                            "Machines with the highest coolant concentration"),
-                      ),
-                      StreamBuilder(
-                        stream: Firestore.instance
-                            .collection(box.get('companyId'))
-                            .orderBy('coolant-percent', descending: true)
-                            .snapshots(),
-                        builder: (context, snapshot) {
-                          assert(snapshot != null);
-                          if (!snapshot.hasData) {
-                            return Text('Please Wait');
-                          } else {
-                            return ListView.builder(
-                              shrinkWrap: true,
-                              itemCount: snapshot.data.documents.length == 1 ||
-                                      snapshot.data.documents.length == 0
-                                  ? snapshot.data.documents.length
-                                  : 2,
-                              itemBuilder: (context, index) {
-                                DocumentSnapshot machines =
-                                    snapshot.data.documents[index];
-                                return ListTile(
-                                  dense: true,
-                                  title: Text(machines['name'] != null
-                                      ? machines['name']
-                                      : "No Data"),
-                                  leading: Icon(Icons.trending_up),
-                                  trailing: Text(machines['coolant-percent'],
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: double.parse(machines[
-                                                          'coolant-percent']) <
-                                                      double.parse(
-                                                          machines['c-max']) &&
-                                                  double.parse(machines[
-                                                          'coolant-percent']) >
-                                                      double.parse(
-                                                          machines['c-min'])
-                                              ? Colors.greenAccent[700]
-                                              : Colors.red)),
-                                );
-                              },
-                            ); //subtitle: Text('Date:  ${machines['last-updated'].substring(5,10)}'),
-                          }
-                        },
-                      )
-                    ],
-                  ),
-                ).padding()
+                  ).padding(),
+                )
               ],
             ))));
   }

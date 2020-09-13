@@ -40,6 +40,21 @@ class _CreateCompanyPageState extends State<CreateCompanyPage> {
     }
   }
 
+  Future<FirebaseUser> signIn(String email, String password) async {
+    try {
+      FirebaseUser user = (await _auth.signInWithEmailAndPassword(
+          email: email, password: password)) as FirebaseUser;
+      assert(user != null);
+      assert(await user.getIdToken() != null);
+      final FirebaseUser currentUser = await _auth.currentUser();
+      assert(user.uid == currentUser.uid);
+      return user;
+    } catch (e) {
+      handleError(e);
+      return null;
+    }
+  }
+
   void handleError(e) {
     Toast.show(e.toString(), context, duration: Toast.LENGTH_LONG);
   }
@@ -151,7 +166,7 @@ class _CreateCompanyPageState extends State<CreateCompanyPage> {
                 child: GestureDetector(
                   onTap: () {
                     getInputData();
-                    signUp(emailData, passData);
+                    signIn(emailData, passData);
                     var box = Hive.box('myBox');
                     box.put('companyId', companyId);
                     box.put('admin', true);
@@ -174,7 +189,46 @@ class _CreateCompanyPageState extends State<CreateCompanyPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          'Create Company',
+                          'Sign In and Create Company',
+                          style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: GestureDetector(
+                  onTap: () {
+                    getInputData();
+                    signUp(emailData, passData);
+                    var box = Hive.box('myBox');
+                    box.put('companyId', companyId);
+                    box.put('admin', true);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => BatchAddPage(),
+                      ),
+                    );
+                    Navigator.of(context).dispose();
+                  },
+                  child: Container(
+                    height: MediaQuery.of(context).size.height * .07,
+                    width: 300,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        gradient: LinearGradient(
+                            colors: [Colors.orangeAccent, Colors.orange])),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Sign Up and Create Company',
                           style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.w600,
