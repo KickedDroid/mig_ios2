@@ -121,7 +121,7 @@ Widget _handleWidget() {
           if (snapshot.hasData) {
             return WelcomeScreen();
           } else {
-            return SignInPage();
+            return InitialPage();
             //return WelcomeScreen();
           }
         }
@@ -153,14 +153,14 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     var initSetttings = new InitializationSettings(android, iOS);
     flutterLocalNotificationsPlugin.initialize(initSetttings,
         onSelectNotification: onSelectNotification);
-    if (box.get('notif') == true) {
-      var checkMachines2 = checkMachines();
-      if (checkMachines2 != null) {
-        checkMachines2.then((value) {
-          showNotification(value);
-        });
-      }
-    }
+    // if (box.get('notif') == true) {
+    //   var checkMachines2 = checkMachines();
+    //   if (checkMachines2 != null) {
+    //     checkMachines2.then((value) {
+    //       showNotification(value);
+    //     });
+    //   }
+    // }
   }
 
   Future onSelectNotification(String payload) {

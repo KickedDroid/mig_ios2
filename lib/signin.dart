@@ -41,8 +41,15 @@ class _SignInPageState extends State<SignInPage> {
 
   Future<FirebaseUser> signUp(email, password) async {
     try {
-      FirebaseUser user = (await _auth.createUserWithEmailAndPassword(
-          email: email, password: password)) as FirebaseUser;
+      FirebaseUser user = await _auth
+          .createUserWithEmailAndPassword(email: email, password: password)
+          .then((value) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => WelcomeScreen()),
+        );
+        return value.user;
+      });
       assert(user != null);
       assert(await user.getIdToken() != null);
       return user;
@@ -54,8 +61,15 @@ class _SignInPageState extends State<SignInPage> {
 
   Future<FirebaseUser> signIn(String email, String password) async {
     try {
-      FirebaseUser user = (await _auth.signInWithEmailAndPassword(
-          email: email, password: password)) as FirebaseUser;
+      FirebaseUser user = await _auth
+          .signInWithEmailAndPassword(email: email, password: password)
+          .then((value) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => WelcomeScreen()),
+        );
+        return value.user;
+      });
       assert(user != null);
       assert(await user.getIdToken() != null);
       final FirebaseUser currentUser = await _auth.currentUser();
@@ -212,12 +226,6 @@ class _SignInPageState extends State<SignInPage> {
                         box.put('userId', emailData);
                         box.put('companyId', companyId);
                         box.put('admin', false);
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => _handleWidget(),
-                          ),
-                        );
                       } else {
                         showToast();
                       }
@@ -257,12 +265,6 @@ class _SignInPageState extends State<SignInPage> {
                         box.put('companyId', companyId);
                         box.put('admin', false);
                         box.put('userId', emailData);
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => _handleWidget(),
-                          ),
-                        );
                       } else {
                         showToast();
                       }
@@ -295,7 +297,12 @@ class _SignInPageState extends State<SignInPage> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      resetPassword(emailData);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ResetPassPage(),
+                        ),
+                      );
                     },
                     child: Padding(
                       padding: const EdgeInsets.all(15.0),

@@ -170,6 +170,7 @@ class _CreateCompanyPageState extends State<CreateCompanyPage> {
                     var box = Hive.box('myBox');
                     box.put('companyId', companyId);
                     box.put('admin', true);
+                    box.put('userId', emailData);
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -209,6 +210,7 @@ class _CreateCompanyPageState extends State<CreateCompanyPage> {
                     var box = Hive.box('myBox');
                     box.put('companyId', companyId);
                     box.put('admin', true);
+                    box.put('userId', emailData);
                     Navigator.push(
                       context,
                       MaterialPageRoute(
