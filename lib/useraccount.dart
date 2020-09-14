@@ -155,9 +155,6 @@ class _UserAccountState extends State<UserAccount> {
                     Icons.edit,
                     color: Colors.grey.shade400,
                   ),
-                  onTap: () {
-                    _showMaterialDialog();
-                  },
                 ),
                 ValueListenableBuilder(
                   valueListenable: Hive.box('myBox').listenable(),
