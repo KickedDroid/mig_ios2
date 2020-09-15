@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:esys_flutter_share/esys_flutter_share.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
@@ -16,6 +17,7 @@ import 'package:screenshot/screenshot.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:dio/dio.dart';
+import 'dart:math' as math;
 
 class BatchAddPage extends StatefulWidget {
   @override
@@ -116,7 +118,8 @@ class _BatchAddPageState extends State<BatchAddPage> {
             ).padding(),
             TextFormField(
               controller: controller,
-              keyboardType: TextInputType.number,
+              inputFormatters: [DecimalTextInputFormatter(decimalRange: 1)],
+              keyboardType: TextInputType.numberWithOptions(decimal: true),
               style: TextStyle(color: Colors.black, fontFamily: 'SFUIDisplay'),
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
@@ -137,7 +140,8 @@ class _BatchAddPageState extends State<BatchAddPage> {
               padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
               child: TextFormField(
                 controller: controllerCtarget,
-                keyboardType: TextInputType.number,
+                inputFormatters: [DecimalTextInputFormatter(decimalRange: 1)],
+                keyboardType: TextInputType.numberWithOptions(decimal: true),
                 style:
                     TextStyle(color: Colors.black, fontFamily: 'SFUIDisplay'),
                 decoration: InputDecoration(
@@ -153,7 +157,8 @@ class _BatchAddPageState extends State<BatchAddPage> {
               padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
               child: TextFormField(
                 controller: controllerCmax,
-                keyboardType: TextInputType.number,
+                inputFormatters: [DecimalTextInputFormatter(decimalRange: 1)],
+                keyboardType: TextInputType.numberWithOptions(decimal: true),
                 style:
                     TextStyle(color: Colors.black, fontFamily: 'SFUIDisplay'),
                 decoration: InputDecoration(
@@ -169,7 +174,8 @@ class _BatchAddPageState extends State<BatchAddPage> {
               padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
               child: TextFormField(
                 controller: controllerCmin,
-                keyboardType: TextInputType.number,
+                inputFormatters: [DecimalTextInputFormatter(decimalRange: 1)],
+                keyboardType: TextInputType.numberWithOptions(decimal: true),
                 style:
                     TextStyle(color: Colors.black, fontFamily: 'SFUIDisplay'),
                 decoration: InputDecoration(
@@ -185,7 +191,8 @@ class _BatchAddPageState extends State<BatchAddPage> {
               padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
               child: TextFormField(
                 controller: controllerCuwarning,
-                keyboardType: TextInputType.number,
+                inputFormatters: [DecimalTextInputFormatter(decimalRange: 1)],
+                keyboardType: TextInputType.numberWithOptions(decimal: true),
                 style:
                     TextStyle(color: Colors.black, fontFamily: 'SFUIDisplay'),
                 decoration: InputDecoration(
@@ -201,7 +208,8 @@ class _BatchAddPageState extends State<BatchAddPage> {
               padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
               child: TextFormField(
                 controller: controllerClwarning,
-                keyboardType: TextInputType.number,
+                inputFormatters: [DecimalTextInputFormatter(decimalRange: 1)],
+                keyboardType: TextInputType.numberWithOptions(decimal: true),
                 style:
                     TextStyle(color: Colors.black, fontFamily: 'SFUIDisplay'),
                 decoration: InputDecoration(
@@ -412,5 +420,45 @@ class QrItem extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+class DecimalTextInputFormatter extends TextInputFormatter {
+  DecimalTextInputFormatter({this.decimalRange})
+      : assert(decimalRange == null || decimalRange > 0);
+
+  final int decimalRange;
+
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue, // unused.
+    TextEditingValue newValue,
+  ) {
+    TextSelection newSelection = newValue.selection;
+    String truncated = newValue.text;
+
+    if (decimalRange != null) {
+      String value = newValue.text;
+
+      if (value.contains(".") &&
+          value.substring(value.indexOf(".") + 1).length > decimalRange) {
+        truncated = oldValue.text;
+        newSelection = oldValue.selection;
+      } else if (value == ".") {
+        truncated = "0.";
+
+        newSelection = newValue.selection.copyWith(
+          baseOffset: math.min(truncated.length, truncated.length + 1),
+          extentOffset: math.min(truncated.length, truncated.length + 1),
+        );
+      }
+
+      return TextEditingValue(
+        text: truncated,
+        selection: newSelection,
+        composing: TextRange.empty,
+      );
+    }
+    return newValue;
   }
 }

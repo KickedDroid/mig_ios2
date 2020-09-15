@@ -11,6 +11,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'generateQr.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:barcode_scan/barcode_scan.dart';
+import 'dart:math' as math;
 
 const flashOn = 'FLASH ON';
 const flashOff = 'FLASH OFF';
@@ -117,7 +118,11 @@ class _UpdateMachinePageState extends State<UpdateMachinePage> {
                         cTarget = value;
                       });
                     },
-                    keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      DecimalTextInputFormatter(decimalRange: 1)
+                    ],
+                    keyboardType:
+                        TextInputType.numberWithOptions(decimal: true),
                     controller: controller,
                     decoration: InputDecoration(
                         filled: true,
@@ -135,7 +140,11 @@ class _UpdateMachinePageState extends State<UpdateMachinePage> {
                         cMin = value;
                       });
                     },
-                    keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      DecimalTextInputFormatter(decimalRange: 1)
+                    ],
+                    keyboardType:
+                        TextInputType.numberWithOptions(decimal: true),
                     controller: controller,
                     decoration: InputDecoration(
                         filled: true,
@@ -153,7 +162,11 @@ class _UpdateMachinePageState extends State<UpdateMachinePage> {
                         cMax = value;
                       });
                     },
-                    keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      DecimalTextInputFormatter(decimalRange: 1)
+                    ],
+                    keyboardType:
+                        TextInputType.numberWithOptions(decimal: true),
                     controller: controller,
                     decoration: InputDecoration(
                         filled: true,
@@ -171,7 +184,11 @@ class _UpdateMachinePageState extends State<UpdateMachinePage> {
                         cLwarning = value;
                       });
                     },
-                    keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      DecimalTextInputFormatter(decimalRange: 1)
+                    ],
+                    keyboardType:
+                        TextInputType.numberWithOptions(decimal: true),
                     controller: controller,
                     decoration: InputDecoration(
                         filled: true,
@@ -189,7 +206,11 @@ class _UpdateMachinePageState extends State<UpdateMachinePage> {
                         cUwarning = value;
                       });
                     },
-                    keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      DecimalTextInputFormatter(decimalRange: 1)
+                    ],
+                    keyboardType:
+                        TextInputType.numberWithOptions(decimal: true),
                     controller: controller,
                     decoration: InputDecoration(
                         filled: true,
@@ -270,7 +291,8 @@ class _UpdateMachinePageState extends State<UpdateMachinePage> {
                     data = value;
                   });
                 },
-                keyboardType: TextInputType.number,
+                inputFormatters: [DecimalTextInputFormatter(decimalRange: 1)],
+                keyboardType: TextInputType.numberWithOptions(decimal: true),
                 controller: controller,
                 decoration: InputDecoration(
                     border: OutlineInputBorder(),
@@ -457,5 +479,45 @@ class GenerateButton extends StatelessWidget {
             )),
       ),
     );
+  }
+}
+
+class DecimalTextInputFormatter extends TextInputFormatter {
+  DecimalTextInputFormatter({this.decimalRange})
+      : assert(decimalRange == null || decimalRange > 0);
+
+  final int decimalRange;
+
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue, // unused.
+    TextEditingValue newValue,
+  ) {
+    TextSelection newSelection = newValue.selection;
+    String truncated = newValue.text;
+
+    if (decimalRange != null) {
+      String value = newValue.text;
+
+      if (value.contains(".") &&
+          value.substring(value.indexOf(".") + 1).length > decimalRange) {
+        truncated = oldValue.text;
+        newSelection = oldValue.selection;
+      } else if (value == ".") {
+        truncated = "0.";
+
+        newSelection = newValue.selection.copyWith(
+          baseOffset: math.min(truncated.length, truncated.length + 1),
+          extentOffset: math.min(truncated.length, truncated.length + 1),
+        );
+      }
+
+      return TextEditingValue(
+        text: truncated,
+        selection: newSelection,
+        composing: TextRange.empty,
+      );
+    }
+    return newValue;
   }
 }

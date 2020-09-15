@@ -108,7 +108,8 @@ class _UpdateMachinePageState extends State<UpdateMachinePageQr> {
                           data = value;
                         });
                       },
-                      keyboardType: TextInputType.number,
+                      keyboardType:
+                          TextInputType.numberWithOptions(decimal: true),
                       controller: controller,
                       decoration: InputDecoration(
                           border: OutlineInputBorder(),
